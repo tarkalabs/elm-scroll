@@ -2,4 +2,4 @@ module Main where
 
 import Scroll
 
-main = lift asText Scroll.deltaY
+main = asText <~ foldp (\dy m -> (if dy > m then dy else m )) 0 Scroll.deltaY
