@@ -18,10 +18,10 @@ Elm.Native.Scroll.make = function(elm) {
             if (w) r = w/d/40*d>0?1:-1; // Opera
             else r = -d/3;              // Firefox;         TODO: do not /3 for OS X
         } else r = w/120;             // IE/Safari/Chrome TODO: /3 for Chrome OS X
+        
         // prevent other wheel events and bubbling in general
         if(evt.stopPropagation) evt.stopPropagation();
         evt.cancelBubble = true;
-    
         // most often you want to prevent default scrolling behavior (full page scroll!)
         if(evt.preventDefault) evt.preventDefault();
         evt.returnValue = false;
