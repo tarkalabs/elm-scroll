@@ -8,21 +8,37 @@ Elm.Native.Scroll.make = function(elm) {
     var Signal = Elm.Signal.make(elm);
     var Utils  = Elm.Native.Utils.make(elm);
 
-    var deltaY = Signal.constant(0);
-    deltaY.defaultNumberOfKids = 1;
+    /*
+     | Thanks http://phrogz.net/JS/wheeldelta.html
+    */
+    var wheelDistance = function(evt){
+      if (!evt) evt = event;
+      var w=evt.wheelDelta, d=evt.detail, r=0.0;
+      if (d){
+        if (w) r = w/d/40*d>0?1:-1; // Opera
+        else r = -d/3;              // Firefox;         TODO: do not /3 for OS X
+      } else r = w/120;             // IE/Safari/Chrome TODO: /3 for Chrome OS X
+      elm.notify(delta.id, r);
+    };
 
-    // var scrollY = A2(Signal.lift, function(p){console.log(p);return p}, deltaY);
-    // scrollY.defaultNumberOfKids = 0;
+    var delta = Signal.constant(0);
+    // delta.defaultNumberOfKids = 2;
+
+
+    // var deltaX = A2(Signal.lift, function(p){return p._0}, delta);
+    // deltaX.defaultNumberOfKids = 0;
+    // var deltaY = A2(Signal.lift, function(p){return p._1}, delta);
+    // deltaY.defaultNumberOfKids = 0;
 
     var node = elm.display === ElmRuntime.Display.FULLSCREEN ? document : elm.node;
 
-    elm.addListener([deltaY.id], node, 'wheel', function wheel(e) {
-        // console.log("notifying:");
-        // console.log(e);
-        elm.notify(deltaY.id, e.wheelDeltaY);
-    });
+    // elm.addListener([delta.id], node, 'wheel', wheelDistance);
+    elm.addListener([delta.id], node, 'DOMMouseScroll', wheelDistance);
+    elm.addListener([delta.id], node, 'mousewheel', wheelDistance);
 
-    return elm.Native.Scroll.values = {
-        deltaY: deltaY
-    };
+    return elm.Native.Scroll.values =
+        { delta : delta
+        // , dy    : deltaY
+        // , dx    : deltaX
+        };
 };
