@@ -30,7 +30,6 @@ emptyScene =
     in (text, center)
 
 
---main = lift asText Scroll.delta
 main = let mutedMouse = (sampleOn Scroll.delta Mouse.position)
            mouseData = lift3 (\x y z -> (x,y,z)) Scroll.delta mutedMouse Window.dimensions
            scene = foldp updateScene emptyScene mouseData
