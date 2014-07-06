@@ -8,7 +8,7 @@ type Position = { x : Float, y : Float }
 type Dimensions = { width : Float, height : Float }
 
 type Scene =
-    { object : Form
+    { form : Form
     , center : Position
     }
 
@@ -21,26 +21,35 @@ type Update =
 -- The idea is to pass aroud the center of the system along with the form too.
 updateScene : Update -> Scene -> Scene
 updateScene update oldScene =
-    let scaleFactor = (1.01) ^ update.scrollDelta
-        zoomDirection = if update.scrollDelta >= 0 then 1 else -1
-        scaled = scale scaleFactor oldScene.object
+    let zoomed = zoom update oldScene
+    in  pan update zoomed
+
+
+zoom : Update -> Scene -> Scene
+zoom update oldScene =
+    let scaleFactor = (1.1) ^ update.scrollDelta
+    in { oldScene | form <- scale scaleFactor oldScene.form}
+
+pan : Update -> Scene -> Scene
+pan update oldScene =
+    let zoomDirection = if update.scrollDelta >= 0 then 1 else -1
         adjustedMouse = { x = (min update.mouse.x update.window.width) - update.window.width/2
-                        , y = (-1 * (min update.mouse.y update.window.height)) + update.window.height/2
+                        , y = update.window.height/2 - (min update.mouse.y update.window.height)
                         }
-        direction mouse = { mouse |
+        panTo mouse = { mouse |
                             x <- zoomDirection * 0.01 * (mouse.x - oldScene.center.x)
                           , y <- zoomDirection * 0.01 * (mouse.y - oldScene.center.y)
                           }
-        newCenter = direction adjustedMouse
+        newCenter = panTo adjustedMouse
     in  { oldScene |
-          object <- move (newCenter.x, newCenter.y) scaled
+          form <- move (newCenter.x, newCenter.y) oldScene.form
         , center <- newCenter}
 
 
 emptyScene : Scene
 emptyScene =
     let text = toText "Hipster Ipsum" |> typeface ["Futura"] |> leftAligned |> toForm
-    in  { object = text
+    in  { form = text
         , center = { x = 0, y = 0 }
         }
 
@@ -51,4 +60,4 @@ main = let floatify (a,b) = (toFloat a, toFloat b)
            windowDimensions = lift (\x -> uncurry Dimensions <| floatify x) Window.dimensions
            updateRecord = lift3 Update Scroll.delta mousePosition windowDimensions
            scene = foldp updateScene emptyScene updateRecord
-       in  lift2 (\s (w,h) -> collage w h [s.object]) scene Window.dimensions
+       in  lift2 (\s (w,h) -> collage w h [s.form]) scene Window.dimensions

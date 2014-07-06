@@ -9,7 +9,7 @@ Elm.Native.Scroll.make = function(elm) {
     var Utils  = Elm.Native.Utils.make(elm);
 
     /*
-     | Thanks http://phrogz.net/JS/wheeldelta.html
+     * Thanks http://phrogz.net/JS/wheeldelta.html
     */
     var wheelDistance = function(evt){
         if (!evt) evt = event;
