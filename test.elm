@@ -4,33 +4,51 @@ import Scroll
 import Mouse
 import Window
 
+type Position = { x : Float, y : Float }
+type Dimensions = { width : Float, height : Float }
+
+type Scene =
+    { object : Form
+    , center : Position
+    }
+
+type Update =
+    { scrollDelta : Float
+    , mouse : Position
+    , window : Dimensions
+    }
+
 -- The idea is to pass aroud the center of the system along with the form too.
-updateScene : (Float,(Int,Int),(Int,Int)) -> (Form,(Int,Int)) -> (Form,(Int,Int))
-updateScene (zoom,(mx,my),(wx,wy)) (scene,(cx,cy)) =
-    let scaleFactor = (1.01) ^ zoom
-        zoomDirection = if zoom >= 0 then 1 else -1
-        mouseX = toFloat mx
-        mouseY = toFloat my
-        sceneX = toFloat wx
-        sceneY = toFloat wy
-        scaled = scale scaleFactor scene
-        adjustedMouse = ( (toFloat (min mx wx) - sceneX/2)
-                        , (toFloat (-1 * (min my wy)) + sceneY/2))
-        --ad{x,y} = adjusted Mouse {x,y}
-        direction (amx, amy) = ( zoomDirection * 0.01 * (amx - toFloat cx)
-                               , zoomDirection * 0.01 * (amy - toFloat cy))
+updateScene : Update -> Scene -> Scene
+updateScene update oldScene =
+    let scaleFactor = (1.01) ^ update.scrollDelta
+        zoomDirection = if update.scrollDelta >= 0 then 1 else -1
+        scaled = scale scaleFactor oldScene.object
+        adjustedMouse = { x = (min update.mouse.x update.window.width) - update.window.width/2
+                        , y = (-1 * (min update.mouse.y update.window.height)) + update.window.height/2
+                        }
+        direction mouse = { mouse |
+                            x <- zoomDirection * 0.01 * (mouse.x - oldScene.center.x)
+                          , y <- zoomDirection * 0.01 * (mouse.y - oldScene.center.y)
+                          }
         newCenter = direction adjustedMouse
-        intNewCenter = (\(x,y) -> (round x, round y)) newCenter
-    in  (move newCenter scaled, intNewCenter)
+    in  { oldScene |
+          object <- move (newCenter.x, newCenter.y) scaled
+        , center <- newCenter}
 
-emptyScene : (Form,(Int,Int))
+
+emptyScene : Scene
 emptyScene =
-    let center = (0,0)
-        text = toText "Hipster Ipsum" |> typeface ["Futura"] |> leftAligned |> toForm
-    in (text, center)
+    let text = toText "Hipster Ipsum" |> typeface ["Futura"] |> leftAligned |> toForm
+    in  { object = text
+        , center = { x = 0, y = 0 }
+        }
 
 
-main = let mutedMouse = (sampleOn Scroll.delta Mouse.position)
-           mouseData = lift3 (\x y z -> (x,y,z)) Scroll.delta mutedMouse Window.dimensions
-           scene = foldp updateScene emptyScene mouseData
-       in  lift2 (\(s,_) (x,y) -> collage x y [s]) scene Window.dimensions
+main = let floatify (a,b) = (toFloat a, toFloat b)
+           mutedMouse = sampleOn Scroll.delta Mouse.position
+           mousePosition = lift (\x -> uncurry Position <| floatify x) mutedMouse
+           windowDimensions = lift (\x -> uncurry Dimensions <| floatify x) Window.dimensions
+           updateRecord = lift3 Update Scroll.delta mousePosition windowDimensions
+           scene = foldp updateScene emptyScene updateRecord
+       in  lift2 (\s (w,h) -> collage w h [s.object]) scene Window.dimensions
