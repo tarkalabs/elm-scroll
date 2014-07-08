@@ -32,14 +32,13 @@ zoom update oldScene =
 
 pan : Update -> Scene -> Scene
 pan update oldScene =
-    let zoomDirection = if update.scrollDelta >= 0 then 1 else -1
+    let zoomDirection = if update.scrollDelta >= 0 then -1 else 1
         adjustedMouse = { x = (min update.mouse.x update.window.width) - update.window.width/2
                         , y = update.window.height/2 - (min update.mouse.y update.window.height)
                         }
-        panTo mouse = { mouse |
-                            x <- zoomDirection * 0.01 * (mouse.x - oldScene.center.x)
-                          , y <- zoomDirection * 0.01 * (mouse.y - oldScene.center.y)
-                          }
+        panTo mouse = { x = zoomDirection * 0.02 * (mouse.x - oldScene.center.x)
+                      , y = zoomDirection * 0.02 * (mouse.y - oldScene.center.y)
+                      }
         newCenter = panTo adjustedMouse
     in  { oldScene |
           form <- move (newCenter.x, newCenter.y) oldScene.form
@@ -49,7 +48,8 @@ pan update oldScene =
 emptyScene : Scene
 emptyScene =
     let text = toText "Hipster Ipsum" |> typeface ["Futura"] |> leftAligned |> toForm
-    in  { form = text
+        budapestMap = image 500 500 "budapest.jpg" |> toForm
+    in  { form = budapestMap
         , center = { x = 0, y = 0 }
         }
 
