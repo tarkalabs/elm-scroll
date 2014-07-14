@@ -34,9 +34,9 @@ Elm.Native.Scroll.make = function(elm) {
 
     var node = elm.display === ElmRuntime.Display.FULLSCREEN ? document : elm.node;
 
-    elm.addListener([delta.id], node, 'wheel', wheelDistance);
-    // elm.addListener([delta.id], node, 'DOMMouseScroll', wheelDistance);
-    // elm.addListener([delta.id], node, 'mousewheel', wheelDistance);
+    // elm.addListener([delta.id], node, 'wheel', wheelDistance);
+    elm.addListener([delta.id], node, 'DOMMouseScroll', wheelDistance);
+    elm.addListener([delta.id], node, 'mousewheel', wheelDistance);
 
     return elm.Native.Scroll.values =
         { delta : delta
