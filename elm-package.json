@@ -3,7 +3,7 @@
   "summary" : "Elm Mouse.scroll extension",
   "description" : "Add scroll signal as an external library",
   "license" : "BSD 3-clause",
-  "repository" : "https://github.com/michaelbjames/elm-scroll.git",
+  "repository" : "https://github.com/tarkalabs/elm-scroll.git",
   "source-directories": [
     "src"
   ],
