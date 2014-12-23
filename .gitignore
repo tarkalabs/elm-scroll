@@ -2,3 +2,4 @@
 *.elmo
 cache/
 build/
+elm-stuff

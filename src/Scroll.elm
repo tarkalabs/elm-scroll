@@ -15,7 +15,7 @@ that the delta never becomes 0 once it has started. To combine this wil other
 signals it is recommended that you use the `sampleOn` function
 
     let mutedMouse = sampleOn Scroll.delta Mouse.position
-    in  lift2 (\x y -> asText <| (x,y)) Scroll.delta mutedMouse
+    in  map2 (\x y -> asText <| (x,y)) Scroll.delta mutedMouse
 -}
 delta : Signal Float
 delta = Native.Scroll.delta

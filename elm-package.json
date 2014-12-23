@@ -1,13 +1,15 @@
 {
-  "version" : "0.0.2",
+  "version" : "0.0.3",
   "summary" : "Elm Mouse.scroll extension",
   "description" : "Add scroll signal as an external library",
   "license" : "BSD 3-clause",
   "repository" : "https://github.com/michaelbjames/elm-scroll.git",
-  "exposed-modules" :
-    [ "Scroll"
-    ],
-  "native-modules" : [ "Native.Scroll" ],
-  "elm-version" : "0.12.3",
-  "dependencies" : {}
+  "source-directories": [
+    "src"
+  ],
+  "exposed-modules" : [ "Scroll" ],
+  "native-modules" : true,
+  "dependencies" : {
+    "elm-lang/core": "1.0.0 <= v < 2.0.0"
+  }
 }
