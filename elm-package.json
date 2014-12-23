@@ -4,9 +4,7 @@
   "description" : "Add scroll signal as an external library",
   "license" : "BSD 3-clause",
   "repository" : "https://github.com/tarkalabs/elm-scroll.git",
-  "source-directories": [
-    "src"
-  ],
+  "source-directories": [ "src" ],
   "exposed-modules" : [ "Scroll" ],
   "native-modules" : true,
   "dependencies" : {
