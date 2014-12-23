@@ -10,7 +10,7 @@ import Signal (Signal)
 
 {-| How the scroll value changes as a delta. The value should be normalized
 across browsers and platforms. Do not expect good mobile support though.
-The number is unbounded but typical scrolling will stay between ±10. Also note
+The number is unbounded but typical scrolling will stay between +/-10. Also note
 that the delta never becomes 0 once it has started. To combine this wil other
 signals it is recommended that you use the `sampleOn` function
 
